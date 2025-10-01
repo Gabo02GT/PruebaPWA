@@ -1,9 +1,41 @@
 # 💪 Gym Tracker Pro - PWA
 
 
-## 📋 **Componentes PWA Implementados**
+## 📋 **Componentes PWA Implementado## 📸 **Capturas de Instalación PWA**
 
-### **1. Web App Manifest** (`public/manifest.json`)
+### **Chrome/Edge - Proceso de Instalación:**
+
+#### **1. PWA en Funcionamiento**
+![PWA cargada en el navegador](./Screenshots/Muestra-app.png)
+*Gym Tracker Pro*
+
+#### **2. Proceso de Instalación - Paso 1**
+![Inicio del proceso de instalación](./Screenshots/Muestra-app-instalacion.png)
+*Detectando la PWA y preparando la instalación*
+
+#### **3. Proceso de Instalación - Paso 2**
+![Continuación del proceso](./Screenshots/Muestra-app-instalacion02.png)
+*Confirmación de instalación en progreso*
+
+#### **4. Proceso de Instalación - Paso 3**
+![Finalizando instalación](./Screenshots/Muestra-app-instalacion03.png)
+*Completando la instalación de la PWA*
+
+#### **5. App Instalada Exitosamente**
+![App instalada en el sistema](./Screenshots/Muestra-app-instalada.png)
+*Gym Tracker Pro instalada como aplicación nativa*
+
+#### **6. Ícono en el Sistema**
+![Ícono de la app en el escritorio/menú](./Screenshots/Muestra-app-instalada-icono.png)
+*Ícono de la PWA disponible en el sistema operativo*
+
+#### **7. Splash Screen Offline**
+![Splash screen funcionando offline](./Screenshots/Muestra-app-splash-screen-offline.png)
+*Splash screen dorado cargando incluso sin conexión a internet*
+
+#### **8. App Funcionando Completamente Offline**
+![App completamente funcional offline](./Screenshots/Muestra-app-offline.png)
+*Demostración del funcionamiento offline completo gracias al Service Worker***1. Web App Manifest** (`public/manifest.json`)
 **¿Qué es?** Archivo JSON que define cómo se comporta la aplicación cuando se instala.
 
 **Propiedades implementadas:**
