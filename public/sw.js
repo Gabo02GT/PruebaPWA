@@ -1,9 +1,9 @@
 
 const CACHE_NAME = 'gym-tracker-v1';
 const urlsToCache = [
-  '/PruebaPWA/',
-  '/PruebaPWA/manifest.json',
-  '/PruebaPWA/icons/icon.png'
+  '/',
+  '/manifest.json',
+  '/icons/icon.png'
 ];
 
 self.addEventListener('install', (event) => {
