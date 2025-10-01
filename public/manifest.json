@@ -2,7 +2,7 @@
     "name": "Gym Tracker Pro",
     "short_name": "GymPro",
     "description": "App profesional para registrar tus rutinas y ejercicios.",
-    "start_url": "/",
+    "start_url": "/PruebaPWA/",
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#0066ff",
