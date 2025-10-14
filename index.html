@@ -5,10 +5,31 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="/manifest.json" />
-    <title>my-pwa</title>
+    <title>Gym Tracker Pro - PWA</title>
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Dev helper: si estamos en localhost, desregistrar service workers antiguos
+      (function() {
+        try {
+          if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              if (regs && regs.length) console.log('Dev helper: unregistering', regs.length, 'service worker(s)');
+              regs.forEach(function(r) {
+                try { r.unregister().then(function() { console.log('Dev helper: unregistered', r.scope); }); } catch (e) { console.warn(e); }
+              });
+            }).catch(function(e){ console.warn('Dev helper SW unregister error', e); });
+
+            if ('caches' in window) {
+              caches.keys().then(function(keys) {
+                return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+              }).then(function() { console.log('Dev helper: cleared caches'); }).catch(function(e){ console.warn('Dev helper caches clear error', e); });
+            }
+          }
+        } catch (e) { console.warn('Dev helper unexpected error', e); }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

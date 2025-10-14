@@ -319,6 +319,15 @@ body {
   border-radius: 0 0 20px 20px;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
 .app-header h1 {
   font-size: 3.5rem;
   font-weight: 900;
@@ -328,6 +337,7 @@ body {
   text-align: center;
   position: relative;
   z-index: 2;
+  flex: 1;
   
   /* Solo las letras tendrán el gradiente */
   color: transparent;
@@ -341,6 +351,25 @@ body {
   /* Efecto de brillo solo en el texto */
   filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5)) 
           drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
+}
+
+.offline-indicator {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #ef4444;
+  animation: pulseOffline 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes pulseOffline {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
 }
 
 .app-header h1::before {
@@ -390,6 +419,166 @@ body {
     0 0 0 0 rgba(255, 215, 0, 0.4);
   position: relative;
   overflow: hidden;
+}
+
+/* Screens common */
+.screen {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.6rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,215,0,0.06);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  animation: fadeInUp 0.6s ease both;
+}
+
+.screen h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.2rem;
+  color: #fff;
+}
+.screen p {
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.form-row input,
+.form-row select,
+.form-row textarea {
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  min-width: 160px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.form-actions button {
+  background: linear-gradient(90deg,#DAA520,#FFD700);
+  color: #1a1a1a;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(218,165,32,0.18);
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+}
+
+/* Routine specific */
+.new-routine-screen .routine-exercises {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.exercise-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  background: rgba(255,255,255,0.02);
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+.exercise-item input[type="number"]{
+  width: 90px;
+}
+.exercise-item input[type="text"], .exercise-item input[type="number"]{
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  color: #fff;
+}
+.exercise-item button{
+  margin-left: auto;
+  background: transparent;
+  color: #ffdddd;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.saved-routines .saved-item{
+  margin-top: 0.6rem;
+  padding: 0.8rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,215,0,0.03), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,215,0,0.06);
+}
+.saved-item strong{ color: #FFD700 }
+.saved-item small{ color: rgba(255,255,255,0.6); margin-left: 0.6rem }
+.saved-item ul{ margin-top: 0.4rem; color: rgba(255,255,255,0.85) }
+.saved-item button{ margin-top: 0.4rem; background: rgba(255,255,255,0.03); color: #fff }
+
+/* Routine filters and selects */
+.filter-bar input, .filter-bar select {
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.saved-item ul li { display:flex; align-items:center; gap:0.6rem }
+.saved-item ul li span { font-size: 0.85rem }
+.saved-item .tag { padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.03); color:#fff }
+
+.exercise-item select { padding: 0.45rem 0.6rem; border-radius: 8px; background: rgba(0,0,0,0.35); color:#fff; border:1px solid rgba(255,255,255,0.04) }
+
+/* Exercises screen */
+.exercises-screen .exercise-list{
+  margin-top: 1rem; display:flex; flex-direction:column; gap:0.6rem
+}
+.exercise-item{
+  padding:0.8rem; border-radius:8px; display:flex; flex-direction:column; gap:0.2rem;
+  background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03)
+}
+.exercise-item strong{ color:#FFD700 }
+.exercise-item button{ align-self:flex-end; margin-top:0.4rem }
+
+/* Diet screen */
+.diet-screen .meal-list{ margin-top:1rem; display:flex; flex-direction:column; gap:0.6rem }
+.meal-item{ padding:0.8rem; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,215,0,0.04) }
+.meal-item strong{ color:#FFD700 }
+
+/* Progress screen */
+.progress-screen .progress-stats{
+  display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem
+}
+.progress-stats > div{
+  flex:1 1 140px; padding:1rem; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,215,0,0.04);
+  text-align:center; font-weight:700; color:#fff; box-shadow: 0 6px 18px rgba(0,0,0,0.45)
+}
+.last-composition{ margin-top:1rem; padding:1rem; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,215,0,0.04) }
+
+/* Responsive tweaks */
+@media (max-width: 720px){
+  .form-row { flex-direction: column; }
+  .screen { margin: 1rem; padding: 1rem }
+  .app-header h1 { font-size: 2.2rem }
 }
 
 .nav-btn::before {

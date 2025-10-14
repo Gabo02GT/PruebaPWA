@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Tracker Pro - Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%, #000000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .offline-container {
+            text-align: center;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .offline-title {
+            color: #FFD700;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .offline-message {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .offline-features {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .offline-features h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .feature-list li {
+            color: #ffffff;
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #FFD700, #B8860B);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .home-btn {
+            background: transparent;
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            color: #FFD700;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .connection-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .tips-section {
+            text-align: left;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .tips-section h4 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .tip {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .tip::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">🔌</div>
+        <h1 class="offline-title">Sin Conexión</h1>
+        <p class="offline-message">
+            No tienes conexión a internet, pero puedes seguir usando Gym Tracker Pro con todas sus funciones offline.
+        </p>
+
+        <div class="offline-features">
+            <h3>🚀 Funciones Disponibles Offline:</h3>
+            <ul class="feature-list">
+                <li>Calculadora de composición corporal</li>
+                <li>Registro de entrenamientos y mediciones</li>
+                <li>Historial de datos guardados localmente</li>
+                <li>Todas las herramientas y calculadoras</li>
+                <li>Navegación completa por la app</li>
+            </ul>
+        </div>
+
+        <div class="tips-section">
+            <h4>💪 Tips para entrenar sin conexión:</h4>
+            <div class="tip">Usa la calculadora corporal para hacer seguimiento</div>
+            <div class="tip">Registra tus entrenamientos - se sincronizarán automáticamente</div>
+            <div class="tip">Revisa tu historial de progreso guardado</div>
+            <div class="tip">Todos los datos se guardan en tu dispositivo</div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <button class="retry-btn" onclick="location.reload()">
+                🔄 Reintentar Conexión
+            </button>
+            <a href="/" class="home-btn">
+                🏠 Ir al Inicio
+            </a>
+        </div>
+
+        <div class="connection-status">
+            🔴 Modo Offline - Los datos se sincronizarán cuando regrese la conexión
+        </div>
+    </div>
+
+    <script>
+        // Detectar cuando regrese la conexión
+        window.addEventListener('online', function() {
+            window.location.reload();
+        });
+
+        // Actualizar estado cada 5 segundos
+        setInterval(function() {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

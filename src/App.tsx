@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import BodyCalculator from './components/BodyCalculator'
+import NewRoutine from './screens/NewRoutine'
+import Progress from './screens/Progress'
+import Diet from './screens/Diet'
 
 function App() {
+  console.log('APP MOUNT: App component executing');
   const [isLoading, setIsLoading] = useState(true)
   const [loadingProgress, setLoadingProgress] = useState(0)
+  const [currentSection, setCurrentSection] = useState('home')
+  const [showCalculator, setShowCalculator] = useState(false)
+  const [isOnline, setIsOnline] = useState(navigator.onLine)
 
   useEffect(() => {
     // Simulación de carga progresiva (4+ segundos)
@@ -18,7 +26,18 @@ function App() {
       })
     }, 80) // 80ms * 50 = 4 segundos
 
-    return () => clearInterval(interval)
+    // Event listeners para estado de conexión
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
   }, [])
 
   if (isLoading) {
@@ -54,24 +73,46 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>💪 Gym Tracker Pro</h1>
+        <div className="header-top">
+          <h1>💪 Gym Tracker Pro</h1>
+          {!isOnline && (
+            <div className="offline-indicator">
+              🔴 Offline
+            </div>
+          )}
+        </div>
         <nav className="app-nav">
-          <button className="nav-btn active">
+          <button
+            className={`nav-btn ${currentSection === 'home' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('home')}
+          >
             🏠 Inicio
           </button>
-          <button className="nav-btn">
+          <button 
+            className={`nav-btn ${currentSection === 'routines' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('routines')}
+          >
             📋 Rutinas
           </button>
-          <button className="nav-btn">
-            💪 Ejercicios
+          {/* Ejercicios removed - use Rutinas instead */}
+          <button 
+            className={`nav-btn ${currentSection === 'diet' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('diet')}
+          >
+            🍎 Dieta
           </button>
-          <button className="nav-btn">
-            📊 Progreso
+          <button 
+            className={`nav-btn ${currentSection === 'progress' ? 'active' : ''}`}
+            onClick={() => setCurrentSection('progress')}
+          >
+            📈 Progreso
           </button>
         </nav>
       </header>
 
-      <main className="app-main">
+  <main className="app-main">
+    {currentSection === 'home' && (
+      <div className="home-content">
         {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-content">
@@ -102,16 +143,16 @@ function App() {
               <div className="card-icon">🎯</div>
               <h4>Nueva Rutina</h4>
               <p>Crea rutinas personalizadas y alcanza tus objetivos</p>
-              <button className="action-btn">
+              <button className="action-btn" onClick={() => setCurrentSection('routines')}>
                 <span>Crear Rutina</span>
                 <span className="btn-arrow">→</span>
               </button>
             </div>
             <div className="action-card">
               <div className="card-icon">🔥</div>
-              <h4>Ejercicios</h4>
-              <p>Explora nuestra biblioteca de ejercicios profesionales</p>
-              <button className="action-btn">
+              <h4>Rutinas</h4>
+              <p>Explora y gestiona tus rutinas y ejercicios relacionados</p>
+              <button className="action-btn" onClick={() => setCurrentSection('routines')}>
                 <span>Explorar</span>
                 <span className="btn-arrow">→</span>
               </button>
@@ -120,17 +161,17 @@ function App() {
               <div className="card-icon">📈</div>
               <h4>Mi Progreso</h4>
               <p>Analiza tu evolución con estadísticas detalladas</p>
-              <button className="action-btn">
+              <button className="action-btn" onClick={() => setCurrentSection('progress')}>
                 <span>Ver Stats</span>
                 <span className="btn-arrow">→</span>
               </button>
             </div>
             <div className="action-card">
-              <div className="card-icon">⏱️</div>
-              <h4>Timer de Descanso</h4>
-              <p>Cronómetro inteligente para optimizar tus descansos</p>
-              <button className="action-btn">
-                <span>Iniciar Timer</span>
+              <div className="card-icon">📊</div>
+              <h4>Calculadora Corporal</h4>
+              <p>Calcula tu IMC, % grasa corporal y obtén recomendaciones</p>
+              <button className="action-btn" onClick={() => setShowCalculator(true)}>
+                <span>Calcular</span>
                 <span className="btn-arrow">→</span>
               </button>
             </div>
@@ -142,7 +183,6 @@ function App() {
           <div className="install-container">
             <h3>📱 ¿Cómo instalar Gym Tracker Pro?</h3>
             <p className="install-subtitle">Convierte esta web en una app nativa en tu dispositivo</p>
-            
             <div className="install-steps">
               <div className="install-step">
                 <div className="step-number">1</div>
@@ -166,7 +206,6 @@ function App() {
                 </div>
               </div>
             </div>
-            
             <div className="install-benefits">
               <h4>✨ Beneficios de instalar:</h4>
               <ul>
@@ -221,26 +260,32 @@ function App() {
         <section className="motivation-section">
           <div className="motivation-content">
             <h3>🔥 Frase del Día</h3>
-            <blockquote className="daily-quote">
-              "El dolor que sientes hoy será la fortaleza que sentirás mañana"
-            </blockquote>
+            <blockquote className="daily-quote">"El dolor que sientes hoy será la fortaleza que sentirás mañana"</blockquote>
             <div className="motivation-stats">
-              <div className="motivation-item">
-                <span className="motivation-number">21</span>
-                <span className="motivation-label">días para formar un hábito</span>
-              </div>
-              <div className="motivation-item">
-                <span className="motivation-number">365</span>
-                <span className="motivation-label">días para transformarte</span>
-              </div>
+              <div className="motivation-item"><span className="motivation-number">21</span><span className="motivation-label">días para formar un hábito</span></div>
+              <div className="motivation-item"><span className="motivation-number">365</span><span className="motivation-label">días para transformarte</span></div>
             </div>
           </div>
         </section>
-      </main>
+      </div>
+    )}
+
+    {/* Conditional Screens */}
+    <section className="screens-container">
+  {currentSection === 'routines' && <NewRoutine />}
+      {currentSection === 'diet' && <Diet />}
+      {currentSection === 'progress' && <Progress />}
+    </section>
+  </main>
 
       <footer className="app-footer">
         <p>💪 Gym Tracker Pro</p>
       </footer>
+
+      {/* Calculadora de Composición Corporal */}
+      {showCalculator && (
+        <BodyCalculator onClose={() => setShowCalculator(false)} />
+      )}
     </div>
   )
 }
