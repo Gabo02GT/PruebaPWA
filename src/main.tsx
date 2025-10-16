@@ -10,9 +10,7 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 )
 
-// Registro del Service Worker con notificaciones
 if ('serviceWorker' in navigator) {
-  // En desarrollo, desregistrar cualquier SW anterior para evitar servir módulos cacheados
   const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
   window.addEventListener('load', async () => {
@@ -23,7 +21,6 @@ if ('serviceWorker' in navigator) {
           console.log('Unregistering service worker (dev):', r);
           await r.unregister();
         }
-        // Also try to clear SW-controlled clients by reloading once
         if (navigator.serviceWorker.controller) {
           console.log('Reloading to clear service worker-controlled cache');
           window.location.reload();
@@ -31,11 +28,9 @@ if ('serviceWorker' in navigator) {
         }
       }
 
-      // Solo (re)registrar el SW en producción o cuando no haya conflicto
       const registration = await navigator.serviceWorker.register('/sw.js');
       console.log('SW registrado con éxito:', registration);
 
-      // Solicitar permisos de notificación
       if ('Notification' in window && Notification.permission === 'default') {
         const permission = await Notification.requestPermission();
         console.log('Permisos de notificación:', permission);
@@ -51,7 +46,6 @@ if ('serviceWorker' in navigator) {
         }
       }
 
-      // Programar recordatorios de entrenamiento
       if ('Notification' in window && Notification.permission === 'granted') {
         setTrainingReminders();
       }
@@ -62,14 +56,11 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Función para programar recordatorios de entrenamiento
 function setTrainingReminders() {
-  // Recordatorio diario a las 6:00 PM
   const now = new Date();
   const reminderTime = new Date();
   reminderTime.setHours(18, 0, 0, 0);
   
-  // Si ya pasó la hora de hoy, programar para mañana
   if (reminderTime <= now) {
     reminderTime.setDate(reminderTime.getDate() + 1);
   }
@@ -83,20 +74,18 @@ function setTrainingReminders() {
         icon: '/icons/icon.png',
         tag: 'daily-reminder'
       });
-      
-      // Programar el siguiente recordatorio (24 horas después)
+    
       setInterval(() => {
         new Notification('🏋️‍♂️ ¡Hora de entrenar!', {
           body: '¿Ya registraste tu entrenamiento de hoy? ¡Dale que puedes!',
           icon: '/icons/icon.png',
           tag: 'daily-reminder'
         });
-      }, 24 * 60 * 60 * 1000); // 24 horas
+      }, 24 * 60 * 60 * 1000); 
     }
   }, timeUntilReminder);
 }
 
-// Detectar conexión online/offline
 window.addEventListener('online', () => {
   console.log('Conexión restaurada');
   if (Notification.permission === 'granted') {

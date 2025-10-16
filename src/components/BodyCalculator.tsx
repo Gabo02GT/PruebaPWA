@@ -54,7 +54,7 @@ export default function BodyCalculator({ onClose }: Props) {
   const loadHistory = async () => {
     try {
       const history = await dbManager.getAllBodyCompositions();
-      setSavedMeasurements(history.reverse()); // Más recientes primero
+      setSavedMeasurements(history.reverse()); 
     } catch (error) {
       console.error('Error loading history:', error);
     }
@@ -69,15 +69,30 @@ export default function BodyCalculator({ onClose }: Props) {
 
   const validateForm = (): boolean => {
     if (measurements.weight <= 0 || measurements.height <= 0 || measurements.age <= 0) {
-      alert('Por favor completa todos los campos básicos');
+      window.dispatchEvent(new CustomEvent('in-app-notification', {
+        detail: {
+          title: 'Campos incompletos',
+          body: 'Por favor completa todos los campos básicos.'
+        }
+      }));
       return false;
     }
     if (measurements.neckCircumference <= 0 || measurements.waistCircumference <= 0) {
-      alert('Por favor completa las circunferencias');
+      window.dispatchEvent(new CustomEvent('in-app-notification', {
+        detail: {
+          title: 'Campos incompletos',
+          body: 'Por favor completa las circunferencias.'
+        }
+      }));
       return false;
     }
     if (measurements.gender === 'female' && (measurements.hipCircumference || 0) <= 0) {
-      alert('La circunferencia de cadera es requerida para mujeres');
+      window.dispatchEvent(new CustomEvent('in-app-notification', {
+        detail: {
+          title: 'Campo requerido',
+          body: 'La circunferencia de cadera es requerida para mujeres.'
+        }
+      }));
       return false;
     }
     return true;
@@ -87,13 +102,17 @@ export default function BodyCalculator({ onClose }: Props) {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent('in-app-notification', {
+      detail: {
+        title: 'Calculando...',
+        body: 'Procesando tu medición. Por favor espera.'
+      }
+    }));
 
     try {
-      // Calcular resultados
       const calculatedResults = BodyCompositionCalculator.calculateAll(measurements);
       setResults(calculatedResults);
 
-      // Preparar datos para guardar
       const dataToSave: Omit<BodyComposition, 'id'> = {
         date: new Date().toISOString(),
         weight: measurements.weight,
@@ -107,16 +126,13 @@ export default function BodyCalculator({ onClose }: Props) {
         bodyFatPercentage: calculatedResults.bodyFatPercentage,
         leanMass: calculatedResults.leanMass,
         recommendations: calculatedResults.recommendations,
-        synced: false // Se sincronizará con Background Sync
+        synced: false 
       };
 
-      // Guardar en IndexedDB
       await dbManager.addBodyComposition(dataToSave);
       
-      // Recargar historial
       await loadHistory();
 
-      // Registrar para Background Sync si está disponible
       if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
         try {
           const registration = await navigator.serviceWorker.ready;
@@ -127,17 +143,21 @@ export default function BodyCalculator({ onClose }: Props) {
         }
       }
 
-      // Mostrar notificación de éxito
-      if (Notification.permission === 'granted') {
-        new Notification('📊 Medición guardada', {
-          body: `IMC: ${calculatedResults.bmi.toFixed(1)} | Grasa: ${calculatedResults.bodyFatPercentage.toFixed(1)}%`,
-          icon: '/icons/icon.png'
-        });
-      }
+      window.dispatchEvent(new CustomEvent('in-app-notification', {
+        detail: {
+          title: '📊 Medición guardada',
+          body: `IMC: ${calculatedResults.bmi.toFixed(1)} | Grasa: ${calculatedResults.bodyFatPercentage.toFixed(1)}%`
+        }
+      }));
 
     } catch (error) {
       console.error('Error calculando y guardando:', error);
-      alert('Error al guardar los datos. Inténtalo de nuevo.');
+      window.dispatchEvent(new CustomEvent('in-app-notification', {
+        detail: {
+          title: 'Error al guardar',
+          body: 'Ocurrió un error al guardar los datos. Inténtalo de nuevo.'
+        }
+      }));
     } finally {
       setIsLoading(false);
     }

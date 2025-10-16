@@ -204,12 +204,9 @@
     </div>
 
     <script>
-        // Detectar cuando regrese la conexión
         window.addEventListener('online', function() {
             window.location.reload();
         });
-
-        // Actualizar estado cada 5 segundos
         setInterval(function() {
             if (navigator.onLine) {
                 window.location.reload();

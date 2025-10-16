@@ -4,9 +4,9 @@ import BodyCalculator from './components/BodyCalculator'
 import NewRoutine from './screens/NewRoutine'
 import Progress from './screens/Progress'
 import Diet from './screens/Diet'
+import NotificationCenter from './components/NotificationCenter'
 
 function App() {
-  console.log('APP MOUNT: App component executing');
   const [isLoading, setIsLoading] = useState(true)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [currentSection, setCurrentSection] = useState('home')
@@ -14,19 +14,18 @@ function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
 
   useEffect(() => {
-    // Simulación de carga progresiva (4+ segundos)
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval)
-          setTimeout(() => setIsLoading(false), 500) // Transición suave
+          setTimeout(() => setIsLoading(false), 500) 
           return 100
         }
         return prev + 2
       })
-    }, 80) // 80ms * 50 = 4 segundos
+    }, 80) 
 
-    // Event listeners para estado de conexión
+
     const handleOnline = () => setIsOnline(true)
     const handleOffline = () => setIsOnline(false)
 
@@ -111,6 +110,7 @@ function App() {
       </header>
 
   <main className="app-main">
+    <NotificationCenter />
     {currentSection === 'home' && (
       <div className="home-content">
         {/* Hero Section */}
@@ -281,6 +281,8 @@ function App() {
       <footer className="app-footer">
         <p>💪 Gym Tracker Pro</p>
       </footer>
+
+      {/* NotificationTester removed for production/demo */}
 
       {/* Calculadora de Composición Corporal */}
       {showCalculator && (

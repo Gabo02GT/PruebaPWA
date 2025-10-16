@@ -11,7 +11,6 @@ export default function NewRoutine() {
   const [exercises, setExercises] = useState<LocalExercise[]>([]);
   const [savedRoutines, setSavedRoutines] = useState<any[]>([]);
 
-  // Filters for saved routines
   const [filterPart, setFilterPart] = useState<'all' | 'upper' | 'lower'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -31,7 +30,6 @@ export default function NewRoutine() {
 
   const saveRoutine = async () => {
     if (!name) return;
-    // Save exercises with part/category info
     await dbManager.addRoutine({ name, createdAt: new Date().toISOString(), exercises });
     setName('');
     setExercises([]);
@@ -47,7 +45,7 @@ export default function NewRoutine() {
     return (savedRoutines || []).filter(r => {
       if (search && !r.name.toLowerCase().includes(search.toLowerCase())) return false;
       if (filterPart === 'all' && (filterCategory === 'all' || !filterCategory)) return true;
-      // check if any exercise matches the filter
+      
       const matches = (r.exercises || []).some((ex: any) => {
         if (filterPart !== 'all' && ex.part !== filterPart) return false;
         if (filterCategory !== 'all' && filterCategory && ex.category !== filterCategory) return false;
@@ -77,7 +75,6 @@ export default function NewRoutine() {
 
             <select value={ex.part} onChange={e => {
               const copy = [...exercises]; copy[i].part = e.target.value as 'upper' | 'lower';
-              // default category when changing part
               copy[i].category = copy[i].part === 'upper' ? UPPER_CATS[0] : LOWER_CATS[0];
               setExercises(copy);
             }}>

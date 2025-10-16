@@ -1,93 +1,90 @@
-
 const CACHE_NAME = 'gym-tracker-v3';
 const STATIC_CACHE = 'gym-tracker-static-v3';
 const DYNAMIC_CACHE = 'gym-tracker-dynamic-v3';
 const IMAGE_CACHE = 'gym-tracker-images-v3';
 
-// Evitar que el Service Worker haga caching agresivo en desarrollo (localhost)
 const IS_LOCALHOST = self.location && (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1');
 if (IS_LOCALHOST) {
-  console.log('Service Worker: running on localhost — skipping install and caching (dev mode)');
-  // No registrar event listeners en modo desarrollo para evitar servir archivos cacheados
-  // Esto permite que Vite HMR funcione correctamente.
-  return;
+  console.log('Service Worker: running on localhost — dev mode');
+
 }
 
-// App Shell - archivos críticos para cache-first
 const APP_SHELL = [
   '/',
   '/manifest.json',
   '/icons/icon.png',
-  '/offline.html'
+  '/offline.html',
+  '/index.html',
+  '/index.css',
+  '/App.css',
+  '/src/main.tsx'
 ];
 
-// Archivos estáticos para cache-first
 const STATIC_ASSETS = [
-  '/manifest.json'
+  '/manifest.json',
+  '/index.html',
+  '/index.css',
+  '/App.css'
 ];
 
-// Endpoint para sincronización (simulado)
 const SYNC_ENDPOINT = 'https://jsonplaceholder.typicode.com/posts';
 
-// Instalación del Service Worker
 self.addEventListener('install', (event) => {
   console.log('Service Worker: Instalando v3...');
-  event.waitUntil(
-    Promise.all([
-      caches.open(STATIC_CACHE).then(cache => cache.addAll(APP_SHELL)),
-      caches.open(DYNAMIC_CACHE),
-      caches.open(IMAGE_CACHE)
-    ]).then(() => {
-      console.log('Service Worker: Todos los caches inicializados');
-      return self.skipWaiting();
-    })
-  );
+  if (!IS_LOCALHOST) {
+    event.waitUntil(
+      Promise.all([
+        caches.open(STATIC_CACHE).then(cache => cache.addAll(APP_SHELL)),
+        caches.open(DYNAMIC_CACHE),
+        caches.open(IMAGE_CACHE)
+      ]).then(() => {
+        console.log('Service Worker: Todos los caches inicializados');
+        self.skipWaiting(); 
+      })
+    );
+  }
 });
 
-// Activación del Service Worker
 self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activado v3');
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          // Mantener solo los caches actuales
-          if (![STATIC_CACHE, DYNAMIC_CACHE, IMAGE_CACHE].includes(cacheName)) {
-            console.log('Service Worker: Eliminando cache antigua', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      return self.clients.claim();
-    })
-  );
+  if (!IS_LOCALHOST) {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (![STATIC_CACHE, DYNAMIC_CACHE, IMAGE_CACHE].includes(cacheName)) {
+              console.log('Service Worker: Eliminando cache antigua', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }).then(() => {
+        self.clients.claim(); 
+      })
+    );
+  }
 });
 
-// Estrategias de cacheo avanzadas
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Cache-first para App Shell y archivos estáticos
-  if (isAppShell(request) || isStaticAsset(request)) {
+  const isNavigation = request.mode === 'navigate' || (request.method === 'GET' && request.headers.get('accept') && request.headers.get('accept').includes('text/html'));
+
+  if (isNavigation || isAppShell(request) || isStaticAsset(request)) {
     event.respondWith(cacheFirstStrategy(request, STATIC_CACHE));
   }
-  // Stale-while-revalidate para imágenes
   else if (isImage(request)) {
     event.respondWith(staleWhileRevalidateStrategy(request, IMAGE_CACHE));
   }
-  // Network-first para datos dinámicos
   else if (isDynamicContent(request)) {
     event.respondWith(networkFirstStrategy(request, DYNAMIC_CACHE));
   }
-  // Cache-first como fallback
   else {
     event.respondWith(cacheFirstStrategy(request, DYNAMIC_CACHE));
   }
 });
 
-// Funciones auxiliares para determinar tipo de recurso
 function isAppShell(request) {
   return APP_SHELL.some(url => request.url.includes(url));
 }
@@ -109,7 +106,6 @@ function isDynamicContent(request) {
          request.url.includes('jsonplaceholder');
 }
 
-// Estrategia Cache-first
 async function cacheFirstStrategy(request, cacheName) {
   try {
     const cachedResponse = await caches.match(request);
@@ -126,7 +122,6 @@ async function cacheFirstStrategy(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.log('SW: Cache-first fallback para:', request.url);
-    // Servir página offline personalizada para documentos
     if (request.destination === 'document') {
       return caches.match('/offline.html') || caches.match('/');
     }
@@ -134,7 +129,6 @@ async function cacheFirstStrategy(request, cacheName) {
   }
 }
 
-// Estrategia Network-first
 async function networkFirstStrategy(request, cacheName) {
   try {
     const networkResponse = await fetch(request);
@@ -151,7 +145,6 @@ async function networkFirstStrategy(request, cacheName) {
   }
 }
 
-// Estrategia Stale-while-revalidate
 async function staleWhileRevalidateStrategy(request, cacheName) {
   const cachedResponse = await caches.match(request);
   
@@ -169,7 +162,6 @@ async function staleWhileRevalidateStrategy(request, cacheName) {
   return cachedResponse || fetchPromise;
 }
 
-// Background Sync para sincronización de datos
 self.addEventListener('sync', (event) => {
   console.log('SW: Background Sync activado:', event.tag);
   
@@ -178,12 +170,10 @@ self.addEventListener('sync', (event) => {
   }
 });
 
-// Función para sincronizar mediciones corporales
 async function syncBodyMeasurements() {
   try {
     console.log('SW: Iniciando sincronización de mediciones...');
     
-    // Obtener datos no sincronizados desde IndexedDB
     const dbRequest = indexedDB.open('GymTrackerDB', 1);
     
     return new Promise((resolve, reject) => {
@@ -202,8 +192,6 @@ async function syncBodyMeasurements() {
             resolve();
             return;
           }
-
-          // Enviar cada medición al servidor
           for (const measurement of unsyncedData) {
             try {
               const response = await fetch(SYNC_ENDPOINT, {
@@ -219,12 +207,10 @@ async function syncBodyMeasurements() {
               });
 
               if (response.ok) {
-                // Marcar como sincronizado en IndexedDB
                 measurement.synced = true;
                 store.put(measurement);
                 console.log('SW: Medición sincronizada:', measurement.id);
                 
-                // Enviar notificación de éxito
                 self.registration.showNotification('📊 Datos sincronizados', {
                   body: `Medición del ${new Date(measurement.date).toLocaleDateString()} enviada correctamente`,
                   icon: '/icons/icon.png',
@@ -249,7 +235,6 @@ async function syncBodyMeasurements() {
   }
 }
 
-// Manejo de notificaciones push
 self.addEventListener('push', (event) => {
   console.log('SW: Push notification recibida');
   
@@ -286,22 +271,18 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Manejo de clics en notificaciones
 self.addEventListener('notificationclick', (event) => {
   console.log('SW: Notification click recibido');
 
   event.notification.close();
 
   if (event.action === 'explore') {
-    // Abrir la aplicación
     event.waitUntil(
       clients.openWindow('/')
     );
   } else if (event.action === 'close') {
-    // Solo cerrar la notificación
     console.log('SW: Notificación cerrada por el usuario');
   } else {
-    // Clic general en la notificación
     event.waitUntil(
       clients.matchAll().then((clientList) => {
         if (clientList.length > 0) {
@@ -313,10 +294,38 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
-// Mensaje desde el cliente principal
 self.addEventListener('message', (event) => {
   console.log('SW: Mensaje recibido:', event.data);
   
+  if (event.data && event.data.type === 'simulate-push') {
+    const payload = event.data.payload || {};
+    const title = payload.title || 'Notificación simulada';
+    const options = {
+      body: payload.body || 'Mensaje de prueba',
+      icon: '/icons/icon.png',
+      badge: '/icons/icon.png',
+      data: payload.data || { simulated: true }
+    };
+
+    event.waitUntil((async () => {
+      try {
+        await self.registration.showNotification(title, options);
+      } catch (err) {
+        console.error('SW: Error mostrando notificación simulada:', err);
+      }
+
+      try {
+        const fallbackMessage = { type: 'push-fallback', title, body: options.body, data: options.data };
+        const clientList = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+        clientList.forEach(client => client.postMessage(fallbackMessage));
+        console.log('SW: Enviado mensaje fallback a clientes (simulate-push)', clientList.length);
+      } catch (err) {
+        console.error('SW: Error enviando fallback a clientes (simulate-push):', err);
+      }
+    })());
+    return;
+  }
+
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
